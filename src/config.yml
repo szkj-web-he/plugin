@@ -4,7 +4,7 @@ question: ""
 # The instructions to the question can be modified by the survey owner. It's recommended that the existing instructions are included in the customised instructions.
 instruction: ""
 # For the purposes of reproducing a bug
-options: []
+options: [{ "code": "1", "content": "内容1" }, { "code": "2", "content": "内容2" }]
 
 optionsInstruction: ""
 
