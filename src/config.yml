@@ -4,7 +4,16 @@ question: ""
 # The instructions to the question can be modified by the survey owner. It's recommended that the existing instructions are included in the customised instructions.
 instruction: ""
 # For the purposes of reproducing a bug
-options: [{ "code": "1", "content": "内容1" }, { "code": "2", "content": "内容2" }]
+options:
+    [
+        [{ "code": "row1", "content": "行内容1" }, { "code": "row2", "content": "行内容2" }],
+        [
+            { "code": "col1", "content": "列内容1" },
+            { "code": "col2", "content": "列内容2" },
+            { "code": "col3", "content": "列内容3" },
+            { "code": "col4", "content": "列内容4" },
+        ],
+    ]
 
 optionsInstruction: ""
 

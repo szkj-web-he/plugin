@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { PluginComms, ConfigYML } from "@possie-engine/dr-plugin-sdk";
+import { normalData, NormalItem, OptionItem } from "./normal";
 
-const comms = new PluginComms({
+export const comms = new PluginComms({
     defaultConfig: new ConfigYML(),
 }) as {
     config: {
-        options?: { code: string; content: string }[];
+        options?: [OptionItem[], OptionItem[]];
     };
     state: unknown;
     renderOnReady: (res: React.ReactNode) => void;
@@ -13,11 +14,7 @@ const comms = new PluginComms({
 const Main: React.FC = () => {
     /* <------------------------------------ **** STATE START **** ------------------------------------ */
     /************* This section will include this component HOOK function *************/
-    const stateRef = useRef(
-        comms.config.options?.map((item) => {
-            return { code: item.code, value: 0 };
-        }) ?? [],
-    );
+    const stateRef = useRef(normalData(true));
 
     const [state, setState] = useState([...stateRef.current]);
     /* <------------------------------------ **** STATE END **** ------------------------------------ */
@@ -25,10 +22,14 @@ const Main: React.FC = () => {
     /************* This section will include this component parameter *************/
 
     useEffect(() => {
-        const data: Record<string, number> = {};
+        const data: Record<string, Record<string, number>> = {};
+
         for (let i = 0; i < state.length; i++) {
-            const item = state[i];
-            data[item.code] = item.value;
+            data[state[i].code] = {};
+            for (let j = 0; j < state[i].children.length; j++) {
+                const col = state[i].children[j];
+                data[state[i].code][col.code] = col.value ?? 0;
+            }
         }
         comms.state = data;
     }, [state]);
@@ -36,9 +37,17 @@ const Main: React.FC = () => {
     /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
     /************* This section will include this component general function *************/
-    const handleChange = (item: { code: string; content: string }) => {
-        for (let i = 0; i < stateRef.current.length; i++) {
-            stateRef.current[i].value = stateRef.current[i].code === item.code ? 1 : 0;
+    const handleChange = (row: NormalItem, col: OptionItem) => {
+        for (let i = 0; i < stateRef.current.length; ) {
+            const rows = stateRef.current[i];
+            if (rows.code === row.code) {
+                for (let j = 0; j < rows.children.length; j++) {
+                    rows.children[j].value = col.code === rows.children[j].code ? 1 : 0;
+                }
+                i = stateRef.current.length;
+            } else {
+                ++i;
+            }
         }
         setState([...stateRef.current]);
     };
@@ -46,18 +55,28 @@ const Main: React.FC = () => {
     /* <------------------------------------ **** FUNCTION END **** ------------------------------------ */
     return (
         <div>
-            {comms.config.options?.map((item) => {
+            {normalData().map((row) => {
                 return (
-                    <label key={item.code} htmlFor={item.code}>
-                        <input
-                            id={item.code}
-                            value={item.code}
-                            name="单选"
-                            type="radio"
-                            onChange={() => handleChange(item)}
-                        />
-                        {item.content}
-                    </label>
+                    <>
+                        {row.children.map((item) => {
+                            return (
+                                <Fragment key={item.code}>
+                                    <label key={item.code} htmlFor={item.code + row.code}>
+                                        <input
+                                            type="radio"
+                                            id={item.code + row.code}
+                                            name={row.code}
+                                            key={item.code + row.code}
+                                            value={item.code}
+                                            onChange={() => handleChange(row, item)}
+                                        />
+                                        {item.content}
+                                    </label>
+                                </Fragment>
+                            );
+                        })}
+                        <br />
+                    </>
                 );
             })}
         </div>
