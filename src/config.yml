@@ -1,0 +1,11 @@
+# The question text can be modified by the survey owner.
+question: ""
+
+# The instructions to the question can be modified by the survey owner. It's recommended that the existing instructions are included in the customised instructions.
+instruction: ""
+# For the purposes of reproducing a bug
+options: []
+
+optionsInstruction: ""
+
+customField: ""
