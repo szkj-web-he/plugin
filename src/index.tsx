@@ -30,7 +30,6 @@ const Main: React.FC = () => {
             const item = state[i];
             data[item.code] = item.value;
         }
-        console.log(JSON.stringify(data));
         comms.state = data;
     }, [state]);
 
