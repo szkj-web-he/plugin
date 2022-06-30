@@ -30,15 +30,21 @@ const Main: React.FC = () => {
             const item = state[i];
             data[item.code] = item.value;
         }
+        console.log(JSON.stringify(data));
         comms.state = data;
     }, [state]);
 
     /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
     /************* This section will include this component general function *************/
-    const handleChange = (item: { code: string; content: string }) => {
-        for (let i = 0; i < stateRef.current.length; i++) {
-            stateRef.current[i].value = stateRef.current[i].code === item.code ? 1 : 0;
+    const handleChange = (item: { code: string; content: string }, value: boolean) => {
+        for (let i = 0; i < stateRef.current.length; ) {
+            if (stateRef.current[i].code === item.code) {
+                stateRef.current[i].value = value ? 1 : 0;
+                i = stateRef.current.length;
+            } else {
+                ++i;
+            }
         }
         setState([...stateRef.current]);
     };
@@ -52,9 +58,9 @@ const Main: React.FC = () => {
                         <input
                             id={item.code}
                             value={item.code}
-                            name="单选"
-                            type="radio"
-                            onChange={() => handleChange(item)}
+                            name="多选"
+                            type="checkbox"
+                            onChange={(e) => handleChange(item, e.currentTarget.checked)}
                         />
                         {item.content}
                     </label>
