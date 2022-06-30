@@ -31,7 +31,6 @@ const Main: React.FC = () => {
                 data[state[i].code][col.code] = col.value ?? "";
             }
         }
-        console.log(JSON.stringify(data));
         comms.state = data;
     }, [state]);
 
