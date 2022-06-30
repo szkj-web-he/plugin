@@ -31,24 +31,31 @@ const Main: React.FC = () => {
                 data[state[i].code][col.code] = col.value ?? 0;
             }
         }
+        console.log(JSON.stringify(data));
         comms.state = data;
     }, [state]);
 
     /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
     /************* This section will include this component general function *************/
-    const handleChange = (row: NormalItem, col: OptionItem) => {
+    const handleChange = (row: NormalItem, col: OptionItem, value: boolean) => {
         for (let i = 0; i < stateRef.current.length; ) {
             const rows = stateRef.current[i];
             if (rows.code === row.code) {
-                for (let j = 0; j < rows.children.length; j++) {
-                    rows.children[j].value = col.code === rows.children[j].code ? 1 : 0;
+                for (let j = 0; j < rows.children.length; ) {
+                    if (col.code === rows.children[j].code) {
+                        rows.children[j].value = value ? 1 : 0;
+                        j = rows.children.length;
+                    } else {
+                        ++j;
+                    }
                 }
                 i = stateRef.current.length;
             } else {
                 ++i;
             }
         }
+
         setState([...stateRef.current]);
     };
 
@@ -63,12 +70,14 @@ const Main: React.FC = () => {
                                 <Fragment key={item.code}>
                                     <label key={item.code} htmlFor={item.code + row.code}>
                                         <input
-                                            type="radio"
+                                            type="checkbox"
                                             id={item.code + row.code}
                                             name={row.code}
                                             key={item.code + row.code}
                                             value={item.code}
-                                            onChange={() => handleChange(row, item)}
+                                            onChange={(e) => {
+                                                handleChange(row, item, e.currentTarget.checked);
+                                            }}
                                         />
                                         {item.content}
                                     </label>
