@@ -6,7 +6,7 @@ export interface OptionItem {
 }
 
 export interface NormalItem extends OptionItem {
-    children: (OptionItem & { value?: number })[];
+    children: (OptionItem & { value?: string })[];
 }
 
 export const normalData = (isState?: boolean): NormalItem[] => {
@@ -28,7 +28,7 @@ export const normalData = (isState?: boolean): NormalItem[] => {
                     ? {
                           code: col.code,
                           content: col.content,
-                          value: 0,
+                          value: "",
                       }
                     : {
                           code: col.code,

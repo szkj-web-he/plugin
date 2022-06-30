@@ -22,28 +22,29 @@ const Main: React.FC = () => {
     /************* This section will include this component parameter *************/
 
     useEffect(() => {
-        const data: Record<string, Record<string, number>> = {};
+        const data: Record<string, Record<string, string>> = {};
 
         for (let i = 0; i < state.length; i++) {
             data[state[i].code] = {};
             for (let j = 0; j < state[i].children.length; j++) {
                 const col = state[i].children[j];
-                data[state[i].code][col.code] = col.value ?? 0;
+                data[state[i].code][col.code] = col.value ?? "";
             }
         }
+        console.log(JSON.stringify(data));
         comms.state = data;
     }, [state]);
 
     /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
     /************* This section will include this component general function *************/
-    const handleChange = (row: NormalItem, col: OptionItem, value: boolean) => {
+    const handleChange = (row: NormalItem, col: OptionItem, value: string) => {
         for (let i = 0; i < stateRef.current.length; ) {
             const rows = stateRef.current[i];
             if (rows.code === row.code) {
                 for (let j = 0; j < rows.children.length; ) {
                     if (col.code === rows.children[j].code) {
-                        rows.children[j].value = value ? 1 : 0;
+                        rows.children[j].value = value;
                         j = rows.children.length;
                     } else {
                         ++j;
@@ -68,17 +69,16 @@ const Main: React.FC = () => {
                             return (
                                 <Fragment key={item.code}>
                                     <label key={item.code} htmlFor={item.code + row.code}>
+                                        {item.content}:
                                         <input
-                                            type="checkbox"
+                                            type="text"
                                             id={item.code + row.code}
                                             name={row.code}
                                             key={item.code + row.code}
-                                            value={item.code}
                                             onChange={(e) => {
-                                                handleChange(row, item, e.currentTarget.checked);
+                                                handleChange(row, item, e.currentTarget.value);
                                             }}
                                         />
-                                        {item.content}
                                     </label>
                                 </Fragment>
                             );
