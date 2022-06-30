@@ -18,7 +18,6 @@ const Main: React.FC = () => {
             return { code: item.code, value: "" };
         }) ?? [],
     );
-
     const [state, setState] = useState([...stateRef.current]);
     /* <------------------------------------ **** STATE END **** ------------------------------------ */
     /* <------------------------------------ **** PARAMETER START **** ------------------------------------ */
