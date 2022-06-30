@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { PluginComms, ConfigYML } from "@possie-engine/dr-plugin-sdk";
 
 const comms = new PluginComms({
@@ -15,7 +15,7 @@ const Main: React.FC = () => {
     /************* This section will include this component HOOK function *************/
     const stateRef = useRef(
         comms.config.options?.map((item) => {
-            return { code: item.code, value: 0 };
+            return { code: item.code, value: "" };
         }) ?? [],
     );
 
@@ -25,20 +25,26 @@ const Main: React.FC = () => {
     /************* This section will include this component parameter *************/
 
     useEffect(() => {
-        const data: Record<string, number> = {};
+        const data: Record<string, string> = {};
         for (let i = 0; i < state.length; i++) {
             const item = state[i];
             data[item.code] = item.value;
         }
+        console.log(JSON.stringify(data));
         comms.state = data;
     }, [state]);
 
     /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
     /************* This section will include this component general function *************/
-    const handleChange = (item: { code: string; content: string }) => {
-        for (let i = 0; i < stateRef.current.length; i++) {
-            stateRef.current[i].value = stateRef.current[i].code === item.code ? 1 : 0;
+    const handleChange = (item: { code: string; content: string }, value: string) => {
+        for (let i = 0; i < stateRef.current.length; ) {
+            if (stateRef.current[i].code === item.code) {
+                stateRef.current[i].value = value;
+                i = stateRef.current.length;
+            } else {
+                ++i;
+            }
         }
         setState([...stateRef.current]);
     };
@@ -48,16 +54,16 @@ const Main: React.FC = () => {
         <div>
             {comms.config.options?.map((item) => {
                 return (
-                    <label key={item.code} htmlFor={item.code}>
-                        <input
-                            id={item.code}
-                            value={item.code}
-                            name="单选"
-                            type="radio"
-                            onChange={() => handleChange(item)}
-                        />
-                        {item.content}
-                    </label>
+                    <Fragment key={item.code}>
+                        <label htmlFor={item.code}>
+                            {item.content}:
+                            <input
+                                id={item.code}
+                                type="text"
+                                onChange={(e) => handleChange(item, e.currentTarget.value)}
+                            />
+                        </label>
+                    </Fragment>
                 );
             })}
         </div>
