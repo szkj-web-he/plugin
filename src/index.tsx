@@ -22,14 +22,21 @@ const Main: React.FC = () => {
     /************* This section will include this component parameter *************/
 
     useEffect(() => {
-        const data: Record<string, Record<string, number>> = {};
+        const data: Record<string, string> = {};
 
         for (let i = 0; i < state.length; i++) {
-            data[state[i].code] = {};
-            for (let j = 0; j < state[i].children.length; j++) {
+            let value = "";
+
+            for (let j = 0; j < state[i].children.length; ) {
                 const col = state[i].children[j];
-                data[state[i].code][col.code] = col.value ?? 0;
+                if (col.value) {
+                    value = col.code;
+                    j = state[i].children.length;
+                } else {
+                    ++j;
+                }
             }
+            data[state[i].code] = value;
         }
         comms.state = data;
     }, [state]);
