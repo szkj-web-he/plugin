@@ -25,10 +25,12 @@ const Main: React.FC = () => {
     /************* This section will include this component parameter *************/
 
     useEffect(() => {
-        const data: Record<string, number> = {};
+        let data = "";
         for (let i = 0; i < state.length; i++) {
             const item = state[i];
-            data[item.code] = item.value;
+            if (item.value === 1) {
+                data = item.code;
+            }
         }
         comms.state = data;
     }, [state]);
