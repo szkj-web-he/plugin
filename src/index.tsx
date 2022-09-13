@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
-import { PluginComms, ConfigYML } from "@possie-engine/dr-plugin-sdk";
+import { ConfigYML, PluginComms } from "@possie-engine/dr-plugin-sdk";
+import React, { Fragment, useEffect, useRef, useState } from "react";
+import { normalData, OptionItem } from "./normal";
 
-const comms = new PluginComms({
+export const comms = new PluginComms({
     defaultConfig: new ConfigYML(),
 }) as {
     config: {
-        options?: { code: string; content: string }[];
+        options?: [OptionItem[], OptionItem[]];
     };
     state: unknown;
     renderOnReady: (res: React.ReactNode) => void;
@@ -13,16 +14,7 @@ const comms = new PluginComms({
 const Main: React.FC = () => {
     /* <------------------------------------ **** STATE START **** ------------------------------------ */
     /************* This section will include this component HOOK function *************/
-    const stateRef = useRef<
-        {
-            code: string;
-            value: null | number;
-        }[]
-    >(
-        comms.config.options?.map((item) => {
-            return { code: item.code, value: null };
-        }) ?? [],
-    );
+    const stateRef = useRef(normalData());
 
     const [state, setState] = useState([...stateRef.current]);
     /* <------------------------------------ **** STATE END **** ------------------------------------ */
@@ -30,10 +22,14 @@ const Main: React.FC = () => {
     /************* This section will include this component parameter *************/
 
     useEffect(() => {
-        const data: Record<string, number | null> = {};
+        const data: Record<string, Record<string, number | null>> = {};
         for (let i = 0; i < state.length; i++) {
-            const item = state[i];
-            data[item.code] = item.value;
+            const row = state[i];
+            data[row.code] = {};
+            for (let j = 0; j < row.children.length; j++) {
+                const col = row.children[j];
+                data[row.code][col.code] = col.value;
+            }
         }
         console.log(JSON.stringify(data));
         comms.state = data;
@@ -42,31 +38,43 @@ const Main: React.FC = () => {
     /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
     /************* This section will include this component general function *************/
-    const handleChange = (item: { code: string; content: string }, value: string) => {
-        for (let i = 0; i < stateRef.current.length; ) {
-            if (stateRef.current[i].code === item.code) {
-                stateRef.current[i].value = value ? Number(value) : null;
-                i = stateRef.current.length;
+    const handleChange = (col: OptionItem, index: number, value: string) => {
+        const cols = stateRef.current[index].children;
+        for (let i = 0; i < cols.length; ) {
+            const item = cols[i];
+            if (item.code === col.code) {
+                item.value = value ? Number(value) : null;
+                i = cols.length;
             } else {
                 ++i;
             }
         }
+
         setState([...stateRef.current]);
     };
 
     /* <------------------------------------ **** FUNCTION END **** ------------------------------------ */
     return (
         <div>
-            {comms.config.options?.map((item) => {
+            {state.map((row, n) => {
                 return (
-                    <label key={item.code} htmlFor={item.code}>
-                        {item.content} :
-                        <input
-                            id={item.code}
-                            type="number"
-                            onChange={(e) => handleChange(item, e.currentTarget.value)}
-                        />
-                    </label>
+                    <Fragment key={n}>
+                        {row.children.map((col) => {
+                            return (
+                                <Fragment key={col.code}>
+                                    {col.content} :
+                                    <input
+                                        type="number"
+                                        onChange={(e) =>
+                                            handleChange(col, n, e.currentTarget.value)
+                                        }
+                                    />
+                                </Fragment>
+                            );
+                        })}
+
+                        <br />
+                    </Fragment>
                 );
             })}
         </div>
