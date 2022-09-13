@@ -13,9 +13,14 @@ const comms = new PluginComms({
 const Main: React.FC = () => {
     /* <------------------------------------ **** STATE START **** ------------------------------------ */
     /************* This section will include this component HOOK function *************/
-    const stateRef = useRef(
+    const stateRef = useRef<
+        {
+            code: string;
+            value: null | number;
+        }[]
+    >(
         comms.config.options?.map((item) => {
-            return { code: item.code, value: 0 };
+            return { code: item.code, value: null };
         }) ?? [],
     );
 
@@ -25,7 +30,7 @@ const Main: React.FC = () => {
     /************* This section will include this component parameter *************/
 
     useEffect(() => {
-        const data: Record<string, number> = {};
+        const data: Record<string, number | null> = {};
         for (let i = 0; i < state.length; i++) {
             const item = state[i];
             data[item.code] = item.value;
@@ -37,10 +42,10 @@ const Main: React.FC = () => {
     /* <------------------------------------ **** PARAMETER END **** ------------------------------------ */
     /* <------------------------------------ **** FUNCTION START **** ------------------------------------ */
     /************* This section will include this component general function *************/
-    const handleChange = (item: { code: string; content: string }, value: boolean) => {
+    const handleChange = (item: { code: string; content: string }, value: string) => {
         for (let i = 0; i < stateRef.current.length; ) {
             if (stateRef.current[i].code === item.code) {
-                stateRef.current[i].value = value ? 1 : 0;
+                stateRef.current[i].value = value ? Number(value) : null;
                 i = stateRef.current.length;
             } else {
                 ++i;
@@ -55,14 +60,12 @@ const Main: React.FC = () => {
             {comms.config.options?.map((item) => {
                 return (
                     <label key={item.code} htmlFor={item.code}>
+                        {item.content} :
                         <input
                             id={item.code}
-                            value={item.code}
-                            name="多选"
-                            type="checkbox"
-                            onChange={(e) => handleChange(item, e.currentTarget.checked)}
+                            type="number"
+                            onChange={(e) => handleChange(item, e.currentTarget.value)}
                         />
-                        {item.content}
                     </label>
                 );
             })}
