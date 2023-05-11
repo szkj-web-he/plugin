@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { PluginComms, ConfigYML } from "@possie-engine/dr-plugin-sdk";
+import { PluginComms, ConfigYML } from "@datareachable/dr-plugin-sdk";
 import { normalData, NormalItem, OptionItem } from "./normal";
 
 export const comms = new PluginComms({
