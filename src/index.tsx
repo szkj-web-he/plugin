@@ -1,4 +1,4 @@
-import { ConfigYML, PluginComms } from "@possie-engine/dr-plugin-sdk";
+import { ConfigYML, PluginComms } from "@datareachable/dr-plugin-sdk";
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { normalData, OptionItem } from "./normal";
 
