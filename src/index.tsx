@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { PluginComms, ConfigYML } from "@possie-engine/dr-plugin-sdk";
+import { PluginComms, ConfigYML } from "@datareachable/dr-plugin-sdk";
 
 const comms = new PluginComms({
     defaultConfig: new ConfigYML(),
